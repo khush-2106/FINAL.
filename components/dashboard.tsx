@@ -71,18 +71,13 @@ export function DashboardComponent() {
   const [challanType, setChallanType] = useState<string>("");
   const [photosDelivered, setPhotosDelivered] = useState<Record<string, number>>({});
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [clients, setClients] = useState<string[]>([]);
-  const [manufacturers, setManufacturers] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchOrders = async () => {
       const querySnapshot = await getDocs(collection(db, "orders"));
-      const ordersData = querySnapshot.docs.map(doc => {
-        const data = doc.data() as Omit<Order, 'id'>;
-        return { id: doc.id, ...data };
-      });
-      setOrders(ordersData);
+      const ordersData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setOrders(ordersData as Order[]);
     };
 
     fetchOrders();
@@ -538,11 +533,6 @@ export function DashboardComponent() {
                   <SelectValue placeholder="Select client" />
                 </SelectTrigger>
                 <SelectContent>
-                  {clients.map((client) => (
-                    <SelectItem key={client} value={client}>
-                      {client}
-                    </SelectItem>
-                  ))}
                   <SelectItem value="new">Add New Client</SelectItem>
                 </SelectContent>
               </Select>
@@ -567,11 +557,6 @@ export function DashboardComponent() {
                   <SelectValue placeholder="Select manufacturer" />
                 </SelectTrigger>
                 <SelectContent>
-                  {manufacturers.map((manufacturer) => (
-                    <SelectItem key={manufacturer} value={manufacturer}>
-                      {manufacturer}
-                    </SelectItem>
-                  ))}
                   <SelectItem value="new">Add New Manufacturer</SelectItem>
                 </SelectContent>
               </Select>
